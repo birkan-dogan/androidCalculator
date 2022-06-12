@@ -17,6 +17,7 @@ keys.addEventListener("click", function (e) {
 
   if (element.classList.contains("operator")) {
     handleOperator(element.value);
+    updateDisplay();
     return;
   }
   if (element.classList.contains("decimal")) {
@@ -56,13 +57,31 @@ function clear() {
 function handleOperator(nextOperator) {
   const value = parseFloat(displayValue);
 
+  if (operator && waitingForSecondValue) {
+    /* if waitingForSecond is true and we want to change the operator after selecting any operator, we should change it. */
+    operator = nextOperator;
+    return;
+  }
+
   if (firstValue === null) {
     firstValue = value;
   } else if (operator) {
     const result = calculate(firstValue, value, operator);
-    displayValue = String(result);
+    displayValue = `${parseFloat(result.toFixed(7))}`;
     firstValue = result;
   }
   waitingForSecondValue = true;
   operator = nextOperator;
+}
+function calculate(first, second, operator) {
+  if (operator === "+") {
+    return first + second;
+  } else if (operator === "-") {
+    return first - second;
+  } else if (operator === "*") {
+    return first * second;
+  } else if (operator === "/") {
+    return first / second;
+  }
+  return second;
 }
